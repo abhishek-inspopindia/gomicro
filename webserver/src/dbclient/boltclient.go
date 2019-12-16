@@ -10,6 +10,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+// IBoltClient -
 type IBoltClient interface {
 	OpenBoltDb()
 	QueryAccount(accountId string) (model.Account, error)
@@ -21,6 +22,7 @@ type BoltClient struct {
 	boltDB *bolt.DB
 }
 
+// OpenBoltDb - Opens a database
 func (bc *BoltClient) OpenBoltDb() {
 	var err error
 	bc.boltDB, err = bolt.Open("accounts.db", 0600, nil)
@@ -29,13 +31,7 @@ func (bc *BoltClient) OpenBoltDb() {
 	}
 }
 
-// Start seeding accounts
-func (bc *BoltClient) Seed() {
-	initializeBucket()
-	seedAccounts()
-}
-
-// Creates an "AccountBucket" in our BoltDB. It will overwrite any existing bucket of the same name.
+// initializeBucket - Creates an "AccountBucket" in our BoltDB. It will overwrite any existing bucket of the same name.
 func (bc *BoltClient) initializeBucket() {
 	bc.boltDB.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucket([]byte("AccountBucket"))
@@ -74,6 +70,7 @@ func (bc *BoltClient) seedAccounts() {
 	fmt.Printf("Seeded %v fake accounts...\n", total)
 }
 
+// QueryAccount -
 func (bc *BoltClient) QueryAccount(accountId string) (model.Account, error) {
 	// Allocate an empty Account instance we'll let json.Unmarhal populate for us in a bit.
 	account := model.Account{}
@@ -101,4 +98,10 @@ func (bc *BoltClient) QueryAccount(accountId string) (model.Account, error) {
 	}
 	// Return the Account struct and nil as error.
 	return account, nil
+}
+
+// Seed - Start seeding accounts
+func (bc *BoltClient) Seed() {
+	bc.initializeBucket()
+	bc.seedAccounts()
 }
