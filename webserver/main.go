@@ -4,9 +4,10 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/abhishek-inspopindia/gomicro/webserver/src/service" // NEW
+	"github.com/abhishek-inspopindia/gomicro/webserver/src/dbclient"
+	"github.com/abhishek-inspopindia/gomicro/webserver/src/service"
 )
 
 type version struct {
@@ -22,7 +23,16 @@ type app struct {
 func main() {
 	MyAppVersion := version{1, 0, 0}
 	MyApp := app{"Go Microservices", MyAppVersion}
-	fmt.Printf("Starting %v v%v.%v.%v\n", MyApp.name, MyApp.version.major, MyApp.version.minor, MyApp.version.patch)
+	log.Printf("Starting %v v%v.%v.%v\n", MyApp.name, MyApp.version.major, MyApp.version.minor, MyApp.version.patch)
+
+	initializeBoltClient() // NEW
 
 	service.StartWebServer("6767") // NEW
+}
+
+// Creates instance and calls the OpenBoltDb and Seed funcs
+func initializeBoltClient() {
+	service.DBClient = &dbclient.BoltClient{}
+	service.DBClient.OpenBoltDb()
+	service.DBClient.Seed()
 }
