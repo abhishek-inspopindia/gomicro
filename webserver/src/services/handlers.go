@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -22,6 +23,7 @@ func GetAccount(w http.ResponseWriter, r *http.Request) {
 	// If err, return a 404
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
+		log.Println(err)
 		return
 	}
 
